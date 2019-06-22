@@ -13,13 +13,27 @@ class Login extends Component {
   static propTypes = {
     loading: PropTypes.bool.isRequired,
     setLoginRequest: PropTypes.func.isRequired,
+    success: PropTypes.bool.isRequired,
     error: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.string]),
+    data: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.shape()]),
+    history: PropTypes.shape({
+      push: PropTypes.func,
+    }).isRequired,
   };
 
   state = {
     email: '',
     password: '',
   };
+
+  componentDidUpdate(prevProps) {
+    const { success, data, history } = this.props;
+
+    if (prevProps.success != success) {
+      localStorage.setItem('@BootCamp', JSON.stringify(data));
+      history.push('/orders');
+    }
+  }
 
   handleSubmit = async e => {
     e.preventDefault();
