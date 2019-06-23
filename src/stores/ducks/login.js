@@ -12,7 +12,7 @@ export const LoginTypes = Types;
 export default Creators;
 
 export const INITIAL_STATE = Immutable({
-  data: null,
+  data: {},
   loading: false,
   error: null,
   success: false,
@@ -20,6 +20,14 @@ export const INITIAL_STATE = Immutable({
 
 export const reducer = createReducer(INITIAL_STATE, {
   [Types.SET_LOGIN_REQUEST]: state => state.merge({ error: null, loading: true }),
-  [Types.SET_LOGIN_SUCCESS]: (state, { data }) => state.merge({ data, success: true, loading: false }),
-  [Types.SET_LOGIN_FAILURE]: (state, { error }) => state.merge({ error, success: false, loading: false }),
+  [Types.SET_LOGIN_SUCCESS]: (state, { data }) => state.merge({
+    data,
+    success: true,
+    loading: false,
+  }),
+  [Types.SET_LOGIN_FAILURE]: (state, { error }) => state.merge({
+    error,
+    success: false,
+    loading: false,
+  }),
 });

@@ -5,13 +5,9 @@ import LoginActions from '../ducks/login';
 
 export function* login({ email, password }) {
   try {
-    const headers = { headers: { 'Content-Type': 'application/json' } };
+    const { data } = yield call(api.post, 'sessions', { email, password });
 
-    console.log({ email, password });
-
-    const { data } = yield call(api.post, 'sessions', { email, password }, headers);
-
-    if (data.user.type === 1) {
+    if (data.type === 1) {
       yield put(LoginActions.setLoginSuccess(data));
     } else {
       yield put(LoginActions.setLoginFailure('Usuário não encontrado'));

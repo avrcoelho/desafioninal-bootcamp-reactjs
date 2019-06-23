@@ -15,7 +15,7 @@ class Login extends Component {
     setLoginRequest: PropTypes.func.isRequired,
     success: PropTypes.bool.isRequired,
     error: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.string]),
-    data: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.shape()]),
+    data: PropTypes.shape().isRequired,
     history: PropTypes.shape({
       push: PropTypes.func,
     }).isRequired,
@@ -29,7 +29,9 @@ class Login extends Component {
   componentDidUpdate(prevProps) {
     const { success, data, history } = this.props;
 
-    if (prevProps.success != success) {
+    console.log(this.props);
+
+    if (prevProps.success !== success) {
       localStorage.setItem('@BootCamp', JSON.stringify(data));
       history.push('/orders');
     }
