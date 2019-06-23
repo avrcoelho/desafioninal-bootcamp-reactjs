@@ -6,6 +6,7 @@ const { Types, Creators } = createActions({
   setLoginRequest: ['email', 'password'],
   setLoginSuccess: ['data'],
   setLoginFailure: ['error'],
+  setClearData: null,
 });
 
 export const LoginTypes = Types;
@@ -29,5 +30,11 @@ export const reducer = createReducer(INITIAL_STATE, {
     error,
     success: false,
     loading: false,
+  }),
+  [Types.SET_CLEAR_DATA]: state => state.merge({
+    data: {},
+    loading: false,
+    error: null,
+    success: false,
   }),
 });

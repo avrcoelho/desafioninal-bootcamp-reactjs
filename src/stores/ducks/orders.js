@@ -23,6 +23,6 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.SET_ORDERS_SUCCESS]: (state, { orders }) => state.merge({ orders, loading: false }),
   [Types.SET_ORDERS_FAILURE]: (state, { error }) => state.merge({ error, loading: false }),
   [Types.SET_NEW_ORDER]: (state, { order }) => state.merge({
-    orders: { docs: [...state.orders.docs, order] },
+    orders: [...state.orders, order],
   }),
 });

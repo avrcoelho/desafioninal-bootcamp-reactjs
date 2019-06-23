@@ -2,12 +2,24 @@ import React from 'react';
 import {
   BrowserRouter, Switch, Route, Redirect,
 } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import { isAuthenticated } from '../services/auth';
 
 // pages
 import Login from '../pages/Login';
 import Orders from '../pages/Orders';
+
+const PublicRoute = ({ component: Component, ...rest }) => (
+  <Route
+    {...rest}
+    render={props => (isAuthenticated() ? <Redirect to="/orders" /> : <Component {...props} />)}
+  />
+);
+
+PublicRoute.propTypes = {
+  component: PropTypes.shape().isRequired,
+};
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
@@ -21,10 +33,19 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
   />
 );
 
+PrivateRoute.propTypes = {
+  component: PropTypes.shape().isRequired,
+  location: PropTypes.shape(),
+};
+
+PrivateRoute.defaultProps = {
+  location: null,
+};
+
 const Routes = () => (
   <BrowserRouter>
     <Switch>
-      <Route exact path="/" component={Login} />
+      <PublicRoute exact path="/" component={Login} />
       <PrivateRoute path="/orders" component={Orders} />
     </Switch>
   </BrowserRouter>

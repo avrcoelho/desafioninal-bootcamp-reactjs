@@ -1,5 +1,5 @@
 export const isAuthenticated = () => {
-  const data = localStorage.getItem('@BootCamp');
+  const data = sessionStorage.getItem('@BootCamp');
   if (data) {
     const { token } = JSON.parse(data);
 

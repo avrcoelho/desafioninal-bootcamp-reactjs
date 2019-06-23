@@ -9,16 +9,19 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import OrdersActions from '../../stores/ducks/orders';
+import UserActions from '../../stores/ducks/user';
 
-import { Container, Header, Content, ListOrders, Item, ListProducts, Product } from './styles';
+import {
+  Container, Header, Content, ListOrders, Item, ListProducts, Product,
+} from './styles';
 import logo from '../../assets/images/logo.svg';
 
 class Orders extends Component {
   static propTypes = {
     setOrdersRequest: PropTypes.func.isRequired,
     setNewOrder: PropTypes.func.isRequired,
-    // orders: PropTypes.shape({
-    docs: PropTypes.arrayOf(
+    setDataUser: PropTypes.func.isRequired,
+    orders: PropTypes.arrayOf(
       PropTypes.shape({
         order: PropTypes.number,
         total: PropTypes.number,
@@ -45,17 +48,29 @@ class Orders extends Component {
           }),
         ),
       }),
-    ),
+    ).isRequired,
     history: PropTypes.shape({
       push: PropTypes.func,
     }).isRequired,
+    userData: PropTypes.oneOfType([
+      PropTypes.oneOf([null]),
+      PropTypes.shape({
+        name: PropTypes.string,
+      }),
+    ]),
+  };
+
+  static defaultProps = {
+    userData: null,
   };
 
   async componentDidMount() {
     this.subscribeToNewOrder();
 
-    const { setOrdersRequest } = this.props;
+    const { setOrdersRequest, setDataUser } = this.props;
+    const data = JSON.parse(sessionStorage.getItem('@BootCamp'));
 
+    await setDataUser(data);
     await setOrdersRequest();
   }
 
@@ -66,7 +81,7 @@ class Orders extends Component {
 
     io.emit('connectOrder', 'orders');
 
-    io.on('order', data => {
+    io.on('order', (data) => {
       setNewOrder(data);
     });
   };
@@ -74,15 +89,13 @@ class Orders extends Component {
   logout = () => {
     const { history } = this.props;
 
-    localStorage.clear();
+    sessionStorage.clear();
 
     history.push('/');
   };
 
   render() {
-    const {
-      orders: { docs },
-    } = this.props;
+    const { orders, userData } = this.props;
 
     return (
       <Container>
@@ -92,7 +105,7 @@ class Orders extends Component {
             <h2>Pizzaria Dom Juan</h2>
           </div>
           <div className="infoUser">
-            <h2>André Coelho</h2>
+            <h2>{userData && userData.name}</h2>
             <button type="button" onClick={this.logout}>
               Sair do app
             </button>
@@ -101,16 +114,22 @@ class Orders extends Component {
         <Content>
           <div className="orders">
             <h2>Ultimos Pedidos</h2>
-            {docs &&
-              docs.map(order => (
+            {orders
+              && orders.map(order => (
                 <ListOrders key={order.order}>
                   <Item>
                     <div className="infoOrder">
                       <h2>
-                        Pedido #{order.order} - {order.customer.name}
+                        Pedido #
+                        {order.order}
+                        {' '}
+-
+                        {' '}
+                        {order.customer.name}
                       </h2>
                       <small>
-                        há{' '}
+                        há
+                        {' '}
                         {distanceInWords(order.createdAt, new Date(), {
                           locale: pt,
                         })}
@@ -118,10 +137,10 @@ class Orders extends Component {
                       <span>
                         <CurrencyFormat
                           value={order.total}
-                          displayType={'text'}
+                          displayType="text"
                           decimalSeparator=","
-                          fixedDecimalScale={true}
-                          prefix={'R$ '}
+                          fixedDecimalScale
+                          prefix="R$ "
                           renderText={value => <div>{value}</div>}
                         />
                       </span>
@@ -131,9 +150,9 @@ class Orders extends Component {
                         <Product key={item._id}>
                           <img src={item.type.url} width={60} height={60} alt={item.type.type} />
                           <div className="dataProduct">
-                            <span className="products">{`${item.product.name} ${
-                              item.type.type
-                            }`}</span>
+                            <span className="products">
+                              {`${item.product.name} ${item.type.type}`}
+                            </span>
                             <span className="size">{item.size.size}</span>
                           </div>
                         </Product>
@@ -157,9 +176,16 @@ const mapStateToProps = state => ({
   orders: state.orders.orders,
   loading: state.orders.loading,
   error: state.orders.error,
+  userData: state.user.data,
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators(OrdersActions, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators(
+  {
+    ...OrdersActions,
+    ...UserActions,
+  },
+  dispatch,
+);
 
 export default connect(
   mapStateToProps,

@@ -13,6 +13,7 @@ class Login extends Component {
   static propTypes = {
     loading: PropTypes.bool.isRequired,
     setLoginRequest: PropTypes.func.isRequired,
+    setClearData: PropTypes.func.isRequired,
     success: PropTypes.bool.isRequired,
     error: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.string]),
     data: PropTypes.shape().isRequired,
@@ -21,23 +22,30 @@ class Login extends Component {
     }).isRequired,
   };
 
+  static defaultProps = {
+    error: null,
+  };
+
   state = {
     email: '',
     password: '',
   };
 
+  async componentDidMount() {
+    const { setClearData } = this.props;
+    await setClearData();
+  }
+
   componentDidUpdate(prevProps) {
     const { success, data, history } = this.props;
 
-    console.log(this.props);
-
     if (prevProps.success !== success) {
-      localStorage.setItem('@BootCamp', JSON.stringify(data));
+      sessionStorage.setItem('@BootCamp', JSON.stringify(data));
       history.push('/orders');
     }
   }
 
-  handleSubmit = async e => {
+  handleSubmit = async (e) => {
     e.preventDefault();
 
     const { setLoginRequest } = this.props;
