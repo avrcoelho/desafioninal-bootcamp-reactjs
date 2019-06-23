@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { distanceInWords } from 'date-fns';
 import pt from 'date-fns/locale/pt';
@@ -12,7 +12,14 @@ import OrdersActions from '../../stores/ducks/orders';
 import UserActions from '../../stores/ducks/user';
 
 import {
-  Container, Header, Content, ListOrders, Item, ListProducts, Product,
+  Container,
+  Header,
+  Content,
+  ListOrders,
+  Item,
+  ListProducts,
+  Product,
+  Error,
 } from './styles';
 import logo from '../../assets/images/logo.svg';
 
@@ -21,6 +28,8 @@ class Orders extends Component {
     setOrdersRequest: PropTypes.func.isRequired,
     setNewOrder: PropTypes.func.isRequired,
     setDataUser: PropTypes.func.isRequired,
+    loading: PropTypes.bool.isRequired,
+    error: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.string]),
     orders: PropTypes.arrayOf(
       PropTypes.shape({
         order: PropTypes.number,
@@ -61,6 +70,10 @@ class Orders extends Component {
   };
 
   static defaultProps = {
+    error: null,
+  };
+
+  static defaultProps = {
     userData: null,
   };
 
@@ -95,7 +108,9 @@ class Orders extends Component {
   };
 
   render() {
-    const { orders, userData } = this.props;
+    const {
+      orders, userData, loading, error,
+    } = this.props;
 
     return (
       <Container>
@@ -114,57 +129,69 @@ class Orders extends Component {
         <Content>
           <div className="orders">
             <h2>Ultimos Pedidos</h2>
-            {orders
-              && orders.map(order => (
-                <ListOrders key={order.order}>
-                  <Item>
-                    <div className="infoOrder">
-                      <h2>
-                        Pedido #
-                        {order.order}
-                        {' '}
+            {loading ? (
+              <i className="fa fa-spinner fa-pulse" />
+            ) : (
+              <Fragment>
+                {error && <Error>{error}</Error>}
+                {orders
+                  && orders.map(order => (
+                    <ListOrders key={order.order}>
+                      <Item>
+                        <div className="infoOrder">
+                          <h2>
+                            Pedido #
+                            {order.order}
+                            {' '}
 -
-                        {' '}
-                        {order.customer.name}
-                      </h2>
-                      <small>
-                        há
-                        {' '}
-                        {distanceInWords(order.createdAt, new Date(), {
-                          locale: pt,
-                        })}
-                      </small>
-                      <span>
-                        <CurrencyFormat
-                          value={order.total}
-                          displayType="text"
-                          decimalSeparator=","
-                          fixedDecimalScale
-                          prefix="R$ "
-                          renderText={value => <div>{value}</div>}
-                        />
-                      </span>
-                    </div>
-                    <ListProducts>
-                      {order.items.map(item => (
-                        <Product key={item._id}>
-                          <img src={item.type.url} width={60} height={60} alt={item.type.type} />
-                          <div className="dataProduct">
-                            <span className="products">
-                              {`${item.product.name} ${item.type.type}`}
-                            </span>
-                            <span className="size">{item.size.size}</span>
-                          </div>
-                        </Product>
-                      ))}
-                    </ListProducts>
-                    <div className="observation">
-                      <strong>Observações: </strong>
-                      <span>{order.observation}</span>
-                    </div>
-                  </Item>
-                </ListOrders>
-              ))}
+                            {' '}
+                            {order.customer.name}
+                          </h2>
+                          <small>
+                            há
+                            {' '}
+                            {distanceInWords(order.createdAt, new Date(), {
+                              locale: pt,
+                            })}
+                          </small>
+                          <span>
+                            <CurrencyFormat
+                              value={order.total}
+                              displayType="text"
+                              decimalSeparator=","
+                              fixedDecimalScale
+                              prefix="R$ "
+                              renderText={value => <div>{value}</div>}
+                            />
+                          </span>
+                        </div>
+                        <ListProducts>
+                          {order.items.map(item => (
+                            <Product key={item._id}>
+                              <img
+                                src={item.type.url}
+                                width={60}
+                                height={60}
+                                alt={item.type.type}
+                              />
+                              <div className="dataProduct">
+                                <span className="products">
+                                  {`${item.product.name} ${item.type.type}`}
+                                </span>
+                                <span className="size">{item.size.size}</span>
+                              </div>
+                            </Product>
+                          ))}
+                        </ListProducts>
+                        <div className="observation">
+                          <strong>Observações: </strong>
+                          <span>{order.observation}</span>
+                        </div>
+                      </Item>
+                    </ListOrders>
+                  ))}
+              </Fragment>
+            )}
           </div>
         </Content>
       </Container>

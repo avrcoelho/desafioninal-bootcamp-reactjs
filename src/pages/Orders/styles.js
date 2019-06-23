@@ -63,6 +63,7 @@ export const Content = styled.div`
   width: 100%;
   padding: 40px 20px;
   text-align: left;
+  align-items: center;
 
   .orders {
     max-width: 800px;
@@ -174,4 +175,13 @@ export const Product = styled.li`
       text-align: left;
     }
   }
+`;
+
+export const Error = styled.span`
+  font-family: Helvetica;
+  font-size: 14px;
+  color: #f00;
+  letter-spacing: 0;
+  line-height: 20.77px;
+  text-align: left;
 `;

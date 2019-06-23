@@ -9,6 +9,6 @@ export function* orders() {
 
     yield put(OrdersActions.setOrdersSuccess(data));
   } catch (err) {
-    yield put(OrdersActions.setOrdersFailure(err));
+    yield put(OrdersActions.setOrdersFailure('Erro ao obter os pedidios'));
   }
 }
