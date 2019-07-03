@@ -93,6 +93,8 @@ class List extends Component {
                         <span>
                           <CurrencyFormat
                             value={order.total}
+                            thousandSeparator="."
+                            decimalScale={2}
                             displayType="text"
                             decimalSeparator=","
                             fixedDecimalScale
