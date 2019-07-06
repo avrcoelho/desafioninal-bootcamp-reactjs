@@ -75,24 +75,17 @@ class List extends Component {
                   <ListOrders key={order.order}>
                     <Item>
                       <div className="infoOrder">
-                        <h2>
-                          Pedido #
-                          {order.order}
-                          {' '}
--
-                          {' '}
-                          {order.customer.name}
-                        </h2>
+                        <h2>{`Pedido #${order.order} - ${order.customer.fullname}`}</h2>
                         <small>
-                          há
-                          {' '}
-                          {distanceInWords(order.createdAt, new Date(), {
+                          {`há ${distanceInWords(order.createdAt, new Date(), {
                             locale: pt,
-                          })}
+                          })}`}
                         </small>
                         <span>
                           <CurrencyFormat
                             value={order.total}
+                            thousandSeparator="."
+                            decimalScale={2}
                             displayType="text"
                             decimalSeparator=","
                             fixedDecimalScale
